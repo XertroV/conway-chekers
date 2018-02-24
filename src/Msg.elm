@@ -16,3 +16,5 @@ type Msg
     | DelSave String
     | ZoomIn
     | ZoomOut
+    | ShareLayout
+    | CloseSharing

@@ -16,6 +16,7 @@ type alias Model =
     , playable : List Checker
     , selected : Maybe Checker
     , errLog : List String
+    , sharingOpen : Bool
     }
 
 
@@ -29,4 +30,5 @@ initialModel =
     , playable = []
     , selected = Nothing
     , errLog = []
+    , sharingOpen = False
     }

@@ -16,6 +16,7 @@ type Styles
     | CheckerHiddenSty
     | BtnSty
     | CheckerSty
+    | Field
     | NoSty
 
 
@@ -65,4 +66,9 @@ stylesheet =
             , rounded 4
             ]
         , style NoSty []
+        , style Field
+            [ rounded 4
+            , all 1
+            , border black
+            ]
         ]

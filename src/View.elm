@@ -5,6 +5,7 @@ import Const exposing (tabRowHeight, utilityRowHeight)
 import Element exposing (Element, bold, button, circle, column, el, empty, h4, paragraph, row, screen, text)
 import Element.Attributes exposing (..)
 import Element.Events exposing (onClick)
+import Element.Input as I exposing (disabled, hiddenLabel, labelAbove)
 import Game exposing (..)
 import Html exposing (Html)
 import List exposing (range)
@@ -68,6 +69,7 @@ controlBar model =
         , btn SaveGame <| text "Save Layout"
         , btn ZoomIn <| text "Zoom In"
         , btn ZoomOut <| text "Zoom Out"
+        , btn ShareLayout <| text "Share Board"
         ]
 
 
@@ -77,6 +79,7 @@ mainView model =
     row NoSty [ width fill, height fill ] <|
         [ empty
         , overlayTopLeft model
+        , sharingOverlay model
         , column NoSty [ width fill, height fill ] <|
             List.map (drawRow model) (range 0 model.nRows)
         ]
@@ -113,6 +116,27 @@ overlayTopLeft model =
                 column NoSty
                     [ spacing 10 ]
                     content
+
+
+sharingOverlay model =
+    if model.sharingOpen then
+        screen <|
+            el OverlaySty
+                [ width <| px 400
+                , center
+                , verticalCenter
+                , padding 15
+                ]
+            <|
+                column NoSty
+                    [ spacing 10 ]
+                    [ h4 NoSty [] <| text "Copy Board"
+                    , paragraph NoSty [] [ text "Please copy the text below" ]
+                    , I.text Field [ padding 10, attribute "readonly" "" ] { onChange = \_ -> NoOp, options = [], label = hiddenLabel "Board to copy", value = toString model.game }
+                    , row NoSty [ width fill, alignRight, padding 10 ] [ btn CloseSharing <| text "Close" ]
+                    ]
+    else
+        empty
 
 
 drawRow model y =

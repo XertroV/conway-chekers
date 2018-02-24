@@ -119,6 +119,12 @@ update msg model =
         ZoomOut ->
             { model | game = gameZoomOut model.game } ! [ recalibrateGridSize ]
 
+        ShareLayout ->
+            { model | sharingOpen = True } ! []
+
+        CloseSharing ->
+            { model | sharingOpen = False } ! []
+
 
 recalibrateGridSize =
     perform ScreenSize size
