@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "elm": "^0.18.0",
     "elm-github-install": "^1.6.1",
     "ramda": "^0.25.0"
   }
