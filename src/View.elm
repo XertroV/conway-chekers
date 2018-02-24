@@ -66,9 +66,12 @@ controlBar model =
         ]
         [ btn ResetGame <| text "Reset"
         , btn SaveGame <| text "Save Layout"
+        , btn ZoomIn <| text "Zoom In"
+        , btn ZoomOut <| text "Zoom Out"
         ]
 
 
+mainView : Model -> Elem
 mainView model =
     -- main row w/in prev
     row NoSty [ width fill, height fill ] <|
@@ -114,13 +117,20 @@ overlayTopLeft model =
 
 drawRow model y =
     row NoSty [ width fill, height <| px model.squareSize ] <|
-        List.map (drawSquare model y) (range 1 model.nCols)
+        List.map (drawSquare model y) (range 1 model.game.width)
 
 
 drawSquare model y_ x_ =
     let
         isBlack =
-            y_ % 2 == 0 && x_ % 2 == 1 || y_ % 2 == 1 && x_ % 2 == 0
+            let
+                mid =
+                    y_ % 2 == 0 && x_ % 2 == 1 || y_ % 2 == 1 && x_ % 2 == 0
+            in
+            if model.game.squaresInverted then
+                not mid
+            else
+                mid
 
         hasChecker =
             (<) 0 <|
@@ -160,7 +170,7 @@ drawSquare model y_ x_ =
             List.member this model.playable
 
         isOnLine =
-            model.nCols // 2 == x_
+            model.game.width // 2 == x_
     in
     el SqSty
         ([ width <| px model.squareSize

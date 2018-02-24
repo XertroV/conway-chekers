@@ -6,6 +6,8 @@ import Game exposing (..)
 import Model exposing (..)
 import Msg exposing (Msg(..))
 import Ports exposing (..)
+import Task exposing (perform)
+import Window exposing (size)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -14,7 +16,7 @@ update msg model =
         ScreenSize { width, height } ->
             let
                 sqSize =
-                    toFloat width / toFloat model.nCols
+                    toFloat width / toFloat model.game.width
 
                 nRows =
                     (floor <|
@@ -111,6 +113,12 @@ update msg model =
         DelSave g ->
             model ! [ delSave g ]
 
+        ZoomIn ->
+            { model | game = gameZoomIn model.game } ! [ perform ScreenSize size ]
+
+        ZoomOut ->
+            { model | game = gameZoomOut model.game } ! [ perform ScreenSize size ]
+
 
 doReset model wipeGame =
     let
@@ -123,8 +131,14 @@ doReset model wipeGame =
         -- placeMode
         pm =
             wipeGame
+
+        cmds =
+            if wipeGame then
+                [ perform ScreenSize size ]
+            else
+                []
     in
-    { model | selected = Nothing, playable = [], game = g, placeMode = pm } ! []
+    { model | selected = Nothing, playable = [], game = g, placeMode = pm } ! cmds
 
 
 addRemChecker model c =
@@ -139,7 +153,7 @@ addRemChecker model c =
                 []
 
         add =
-            if exists || onRightOfLine model.nCols c.x then
+            if exists || onRightOfLine model.game.width c.x then
                 []
             else
                 [ c ]

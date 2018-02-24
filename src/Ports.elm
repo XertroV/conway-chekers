@@ -1,7 +1,7 @@
 port module Ports exposing (..)
 
 import Game exposing (Checker, Game)
-import Json.Decode exposing (Decoder, Value, int, list, string)
+import Json.Decode exposing (Decoder, Value, bool, int, list, string)
 import Json.Decode.Pipeline exposing (decode, required)
 import Msg exposing (..)
 
@@ -47,6 +47,7 @@ gameDecoder =
     decode Game
         |> required "width" int
         |> required "checkers" (list checkerDecoder)
+        |> required "squaresInverted" bool
 
 
 port delSave : String -> Cmd msg

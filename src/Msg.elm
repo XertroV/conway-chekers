@@ -14,3 +14,5 @@ type Msg
     | LoadSave String
     | GotLoadSave (Result String Game)
     | DelSave String
+    | ZoomIn
+    | ZoomOut
