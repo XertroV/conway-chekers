@@ -105,7 +105,7 @@ update msg model =
         GotLoadSave game ->
             case game of
                 Ok g ->
-                    { model | game = g, placeMode = True } ! []
+                    { model | game = g, placeMode = True } ! [ recalibrateGridSize ]
 
                 Err e ->
                     { model | errLog = log e e :: model.errLog } ! []
@@ -114,10 +114,14 @@ update msg model =
             model ! [ delSave g ]
 
         ZoomIn ->
-            { model | game = gameZoomIn model.game } ! [ perform ScreenSize size ]
+            { model | game = gameZoomIn model.game } ! [ recalibrateGridSize ]
 
         ZoomOut ->
-            { model | game = gameZoomOut model.game } ! [ perform ScreenSize size ]
+            { model | game = gameZoomOut model.game } ! [ recalibrateGridSize ]
+
+
+recalibrateGridSize =
+    perform ScreenSize size
 
 
 doReset model wipeGame =
@@ -134,7 +138,7 @@ doReset model wipeGame =
 
         cmds =
             if wipeGame then
-                [ perform ScreenSize size ]
+                [ recalibrateGridSize ]
             else
                 []
     in
