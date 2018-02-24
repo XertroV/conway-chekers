@@ -18,3 +18,4 @@ type Msg
     | ZoomOut
     | ShareLayout
     | CloseSharing
+    | UpdateField String String

@@ -1,7 +1,8 @@
 module View exposing (..)
 
 import Checkers.Style exposing (Styles(..), Vars(..), stylesheet)
-import Const exposing (tabRowHeight, utilityRowHeight)
+import Const exposing (sharingField, tabRowHeight, utilityRowHeight)
+import Dict
 import Element exposing (Element, bold, button, circle, column, el, empty, h4, paragraph, row, screen, text)
 import Element.Attributes exposing (..)
 import Element.Events exposing (onClick)
@@ -9,9 +10,11 @@ import Element.Input as I exposing (disabled, hiddenLabel, labelAbove)
 import Game exposing (..)
 import Html exposing (Html)
 import List exposing (range)
+import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (..)
 import Style exposing (variation)
+import Types exposing (..)
 
 
 type alias Elem =
@@ -118,25 +121,40 @@ overlayTopLeft model =
                     content
 
 
+sharingOverlay : Model -> Elem
 sharingOverlay model =
-    if model.sharingOpen then
-        screen <|
-            el OverlaySty
-                [ width <| px 400
-                , center
-                , verticalCenter
-                , padding 15
-                ]
-            <|
-                column NoSty
-                    [ spacing 10 ]
-                    [ h4 NoSty [] <| text "Copy Board"
-                    , paragraph NoSty [] [ text "Please copy the text below" ]
-                    , I.text Field [ padding 10, attribute "readonly" "" ] { onChange = \_ -> NoOp, options = [], label = hiddenLabel "Board to copy", value = toString model.game }
-                    , row NoSty [ width fill, alignRight, padding 10 ] [ btn CloseSharing <| text "Close" ]
+    let
+        wrapper inner =
+            screen <|
+                el OverlaySty
+                    [ width <| px 400
+                    , center
+                    , verticalCenter
+                    , padding 15
                     ]
-    else
-        empty
+                <|
+                    column NoSty
+                        [ spacing 10 ]
+                        inner
+    in
+    case model.sharingOpen of
+        SharingSend ->
+            wrapper
+                [ h4 NoSty [] <| text "Copy Board"
+                , paragraph NoSty [] [ text "Please copy the text below" ]
+                , I.text Field [ padding 10, attribute "readonly" "" ] { onChange = \_ -> NoOp, options = [], label = hiddenLabel "Board to copy", value = toString model.game }
+                , row NoSty [ width fill, alignRight, padding 10 ] [ btn CloseSharing <| text "Close" ]
+                ]
+
+        SharingGet ->
+            wrapper
+                [ h4 NoSty [] <| text "Paste Board"
+                , paragraph NoSty [] [ text "Please paste text below" ]
+                , I.text Field [ padding 10 ] { onChange = UpdateField sharingField, options = [], label = hiddenLabel "", value = Dict.get sharingField model.fields ? "" }
+                ]
+
+        _ ->
+            empty
 
 
 drawRow model y =

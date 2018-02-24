@@ -7,3 +7,7 @@ tabRowHeight =
 
 utilityRowHeight =
     50
+
+
+sharingField =
+    "sharingInput"

@@ -2,11 +2,13 @@ module Update exposing (..)
 
 import Const exposing (tabRowHeight, utilityRowHeight)
 import Debug exposing (log)
+import Dict
 import Game exposing (..)
 import Model exposing (..)
 import Msg exposing (Msg(..))
 import Ports exposing (..)
 import Task exposing (perform)
+import Types exposing (..)
 import Window exposing (size)
 
 
@@ -86,7 +88,7 @@ update msg model =
             doReset model True
 
         TogglePlaceMode ->
-            { model | placeMode = not model.placeMode } ! []
+            { model | placeMode = not model.placeMode, startingGame = model.game } ! []
 
         SaveGame ->
             model ! [ saveGame { game = model.game } ]
@@ -120,10 +122,13 @@ update msg model =
             { model | game = gameZoomOut model.game } ! [ recalibrateGridSize ]
 
         ShareLayout ->
-            { model | sharingOpen = True } ! []
+            { model | sharingOpen = SharingSend } ! []
 
         CloseSharing ->
-            { model | sharingOpen = False } ! []
+            { model | sharingOpen = NoSharing } ! []
+
+        UpdateField k v ->
+            { model | fields = Dict.insert k v model.fields } ! []
 
 
 recalibrateGridSize =

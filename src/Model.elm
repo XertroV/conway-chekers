@@ -1,6 +1,8 @@
 module Model exposing (..)
 
+import Dict exposing (Dict)
 import Game exposing (..)
+import Types exposing (..)
 
 
 type alias Tab =
@@ -16,7 +18,9 @@ type alias Model =
     , playable : List Checker
     , selected : Maybe Checker
     , errLog : List String
-    , sharingOpen : Bool
+    , sharingOpen : SharingStatus
+    , startingGame : Game
+    , fields : Dict String String
     }
 
 
@@ -30,5 +34,7 @@ initialModel =
     , playable = []
     , selected = Nothing
     , errLog = []
-    , sharingOpen = False
+    , sharingOpen = NoSharing
+    , startingGame = initGame
+    , fields = Dict.empty
     }
