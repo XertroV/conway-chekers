@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkers</title>
+    <script src="/js/ramda.min.js"></script>
+    <script src="elm.js"></script>
+</head>
+<body>
+<script>
+    const kGameIndexSaves = "game.index.saves";
+    const kGameSave = name => "game.save." + name.toString();
+
+    const app = Elm.Main.fullscreen();
+
+    const getLsJson = path => {
+        return JSON.parse(localStorage.getItem(path));
+    }
+
+    const setLsJson = (path, obj) => {
+        localStorage.setItem(path, JSON.stringify(obj));
+    }
+
+    const addGameSave = (name, jsonGame) => {
+        const games = getLsJson(kGameIndexSaves);
+        setLsJson(kGameIndexSaves, R.uniq(R.append(name, games)));
+        setLsJson(kGameSave(name), jsonGame);
+        sendSaves();
+        console.log("Saved", name, "under", kGameSave(name));
+    }
+
+    const delSave = name => {
+        const _go = confirm("Do you really want to delete your save named '" + name + "'?");
+        if (_go) {
+            const games = getLsJson(kGameIndexSaves);
+            setLsJson(kGameIndexSaves, R.filter(g => g !== name, games));
+            localStorage.setItem(kGameSave(name), null);
+            sendSaves();
+            console.log("Deleted save at:", kGameSave(name))
+        } else {
+            console.log("Did not delete", name);
+        }
+    }
+
+    const sendSaves = () => {
+        const games = getLsJson(kGameIndexSaves);
+        console.log("Sending game index:", games);
+        app.ports.listGamesResp.send(games)
+    }
+
+    app.ports.saveGame.subscribe(function({game}) {
+        const name = prompt("Name your save:") || "Untitled";
+        addGameSave(name, game);
+    });
+
+    app.ports.listGames.subscribe(meh => {
+        sendSaves();
+    })
+
+    app.ports.loadGame.subscribe(name => {
+        const g = getLsJson((kGameSave(name)));
+        console.log("Loading game:", g)
+        app.ports.loadGameResp.send(g);
+    })
+
+    app.ports.delSave.subscribe(name => {
+        delSave(name);
+    })
+
+    window.addEventListener("storage", function(event) {
+        if (event.key === kGameIndexSaves) {
+            sendSaves();
+        }
+    });
+</script>
+
+</body>
+</html>
