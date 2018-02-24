@@ -1,16 +1,3 @@
-# Elm project
+# Conway's Checkers
 
-## Getting started
-
-You need to have [Elm](http://elm-lang.org/) 0.18 installed on your machine.
-
-Compile this project with:
-
-    elm make src/Main.elm
-
-Then view it:
-
-    elm reactor
-
-
-started at 10.18
+I started this as a "how quick" type challenge. Started at 10.18pm. Finished 3:15am.
